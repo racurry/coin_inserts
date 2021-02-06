@@ -35,26 +35,71 @@ get "/generate" do
 
     Country.all.each_slice(20) do |countries|
 
-      puts "countries #{countries}"
+      # Each page is a grid of 4w, 5h 2x2 squares
+      columns = 4
+      rows = 5
+      width = height = 2.in
 
-      stroke do
-        # Each page is a grid of 4w, 5h 2x2 squares
-        columns = 4
-        rows = 5
-        width = height = 2.in
+      columns.times do |column|
+        x = column * width
+        rows.times do |row|
 
-        columns.times do |column|
-          x = column * width
-          rows.times do |row|
-            idx = column + row
-            country = countries[idx]
+          # Figure out which country we're dealing with.
+          # Just pluck the next one off the list
+          idx = row * columns + column
+          country = countries[idx]
 
+          # So that we draw from top, start with our 10.in guide
+          y = 10.in - row * height
+
+          # Now we're drawing the grid square
+          bounding_box([x, y], width: width, height: height) do
+
+            # We don't need to draw anythine else if there is no country
             if country
-              text country.name
+
+              # Draw a slightly smaller bounding box to serve as a margin
+              margin = 0.1.in
+              inner_width = width - 2 * margin
+              inner_height = height - 2 * margin
+
+              bounding_box([margin, height - margin], width: inner_width, height: inner_height) do
+                center_x = inner_width / 2
+                center_y = inner_height / 2
+
+                # Draw the flag
+
+                fill_color '333333'
+                country_name_x = 0
+                country_name_y = center_y
+                country_name_height = inner_height / 4
+                country_name_width = inner_width
+                text_box country.name, at: [country_name_x, country_name_y],
+                          width: country_name_width,
+                          height: country_name_height,
+                          overflow: :shrink_to_fit,
+                          size: 20,
+                          min_font_size: 5,
+                          align: :center
+
+                fill_color 'aaaaaa'
+                years_x = 0
+                years_y = inner_height / 4 - margin
+                years_height = inner_height / 4
+                years_width = inner_width
+                text_box "(#{country.years})", at: [years_x, years_y],
+                          width: years_width,
+                          height: years_height,
+                          overflow: :shrink_to_fit,
+                          size: 12,
+                          min_font_size: 5,
+                          align: :center
+
+              end
+
             end
 
-            y = 10.in - row * height
-            rectangle [x, y], width, height
+            transparent(0.5) { stroke_bounds }
           end
         end
       end
@@ -64,3 +109,9 @@ get "/generate" do
 
   redirect to('/')
 end
+
+
+
+
+
+
