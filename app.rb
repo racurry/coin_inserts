@@ -3,6 +3,7 @@ require "sinatra"
 require "sinatra/activerecord"
 require "prawn"
 require "prawn/measurement_extensions"
+require 'shellwords'
 
 set :database, {adapter: "sqlite3", database: "db/coin_inserts.sqlite3"}
 
@@ -21,7 +22,7 @@ end
 post '/update_country' do
   country = Country.find(params[:id])
   if params[:do] =='Update'
-    country.update!(name: params[:name], years: params[:years])
+    country.update!(name: params[:name], years: params[:years], flag_file_name: params[:flag_file_name])
   elsif params[:do] =='Delete'
     country.destroy
   end
@@ -68,7 +69,17 @@ get "/generate" do
                 center_y = inner_height / 2
 
                 # Draw the flag
+                file = "./flag_images/us-34-star-flag.jpg"
+                image_x = 0
+                image_y = inner_height
+                image_height = inner_height / 2 - margin
+                image_width = inner_width
+                if !country.flag_file_name.nil? && File.exists?(file)
+                  # image Shellwords.escape()
+                  image file, height: image_height, position: :center
+                end
 
+                # Draw the country name
                 fill_color '333333'
                 country_name_x = 0
                 country_name_y = center_y
@@ -82,6 +93,7 @@ get "/generate" do
                           min_font_size: 5,
                           align: :center
 
+                # Draw the dates
                 fill_color 'aaaaaa'
                 years_x = 0
                 years_y = inner_height / 4 - margin
