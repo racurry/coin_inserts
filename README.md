@@ -1,9 +1,29 @@
 # Coin Inserts
 
-The goal is to have a lightweight app that I can generate printable PDFs of coin inserts.
+A very tiny app that I use to generate 2x2 inserts for coin album pages that look like this:
+
+![example.png]
+
+## How does it work
+From the command line, run
+```
+bundle install
+rackup
+```
+to grab dependencies and start the server.  Then go to [http://localhost:9292](http://localhost:9292) to run the app.
+
+Add or edit the list of country data, and click "Generate" to get a new version of the pdf dumped out at `./Coin inserts.pdf`.
 
 ## Todo
-- Generate printable PDFs
+- Start filling it with data
+- Github pages-ify it
+- Add images from the form, maybe?  Convert and get file name on the fly
 
-# Running the webapp
-`> rackup`
+## Long term
+- Different 'groups'
+  EU, US types, etc
+
+## Built with
+- Sinatra
+- https://github.com/rmagick/rmagick
+- https://prawnpdf.org/
