@@ -3,7 +3,8 @@ require "sinatra"
 require "sinatra/activerecord"
 require "prawn"
 require "prawn/measurement_extensions"
-require 'shellwords'
+require 'RMagick'
+include Magick
 
 set :database, {adapter: "sqlite3", database: "db/coin_inserts.sqlite3"}
 
@@ -69,14 +70,19 @@ get "/generate" do
                 center_y = inner_height / 2
 
                 # Draw the flag
-                file = "./flag_images/us-34-star-flag.jpg"
-                image_x = 0
-                image_y = inner_height
-                image_height = inner_height / 2 - margin
-                image_width = inner_width
-                if !country.flag_file_name.nil? && File.exists?(file)
-                  # image Shellwords.escape()
-                  image file, height: image_height, position: :center
+                next unless country.flag_file_name
+                image_file = "./flag_images/#{country.flag_file_name}"
+                if File.file?(image_file)
+                  image_x = 0
+                  image_y = inner_height
+                  image_height = inner_height / 2 - margin
+                  image_width = inner_width
+                  # let's just always make a jpg, just in case we get bad file types
+                  img = ImageList.new image_file
+                  tmp_jpg = img.write("./flag_images/tmp.jpg")
+                  image "./flag_images/tmp.jpg", height: image_height, position: :center
+                else
+                  puts "No flag image for #{country.name}"
                 end
 
                 # Draw the country name

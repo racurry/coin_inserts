@@ -26,6 +26,7 @@ GEM
     rack-protection (2.1.0)
       rack
     rake (13.0.3)
+    rmagick (4.2.0)
     ruby2_keywords (0.0.4)
     sinatra (2.1.0)
       mustermann (~> 1.0)
@@ -48,6 +49,7 @@ PLATFORMS
 DEPENDENCIES
   prawn
   rake
+  rmagick
   sinatra
   sinatra-activerecord
   sqlite3
